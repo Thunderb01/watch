@@ -5,16 +5,16 @@ export function assets(type) {
   return (path) => type + '/' + path
 }
 
-export function is_alive(callback, args) {
+export function is_alive(messageBuilder) {
   const hr = new HeartRate();
   const wearing = new Wear();
 
-  return () => {
-    hr.onCurrentChange(() => {
-      let curr_hr = hr.getCurrent();
-      if (curr_hr < MIN_HR && wearing.getCurrent() == WEARING) {
-        callback(args);
-      }  
-    })
+  const cb1 = () => {
+    alive = (alive && hr.getCurrent() < MIN_HR && wearing.getCurrent() == WEARING)
+    console.log('living status: %s', alive);
+    messageBuilder.send(alive)
   }
+  
+  hr.onChange(cb1);
+  hr.offChange(()=>{});
 }
